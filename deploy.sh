@@ -3,8 +3,6 @@
 #run from cloudshell home directory
 gcloud config set compute/zone us-central1-f
 
-sudo rm -rf stub-jenkins2.0
-git clone https://github.com/marcingluc-clearobject/stub-jenkins2.0.git
 cd stub-jenkins2.0/jenkins
 
 gcloud --quiet container clusters delete jenkins-cd
