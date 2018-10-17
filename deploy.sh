@@ -25,7 +25,7 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 #helm chart custom GCP values https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes/blob/master/jenkins/values.yaml
-./helm install -n cd stable/jenkins --values jenkins/values.yaml --version 0.19.0 --wait
+./helm install -n cd stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 
