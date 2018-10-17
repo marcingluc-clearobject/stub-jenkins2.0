@@ -3,7 +3,7 @@
 #run from cloudshell home directory
 gcloud config set compute/zone us-central1-f
 
-cd stub-jenkins2.0/jenkins
+cd jenkins
 
 gcloud --quiet container clusters delete jenkins-cd
 gcloud --quiet compute networks delete jenkins
