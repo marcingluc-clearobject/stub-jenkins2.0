@@ -29,13 +29,33 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 
 ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 
-echo Your Admin PWD = $ADMIN_PWD
-
 export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
-echo http://$SERVICE_IP:8080/login
+
 
 
 #build.co.clearobject.com
 #deploy.co.clerobject.com
 #manage.co.clerobject.com
+
+
+#Set DNS
+#Ref link: https://cloud.google.com/dns/records/
+
+#Copy service account
+#mkdir creds
+#gsutil cp gs://co-sa-keys/objectio-dns.json creds
+
+gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
+
+gcloud --project clearobject-corp dns record-sets transaction add -z=clearobject-corp \
+   --name="build.co.clearobject.com" \
+   --type=A \
+   --ttl=300 $SERVICE_IP
+
+gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
+
+
+
+echo Your Admin PWD = $ADMIN_PWD
+echo http://$SERVICE_IP:8080/login
