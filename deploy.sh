@@ -31,13 +31,9 @@ ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.dat
 
 export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
-
-
-
 #build.co.clearobject.com
 #deploy.co.clerobject.com
 #manage.co.clerobject.com
-
 
 #Set DNS
 #Ref link: https://cloud.google.com/dns/records/
@@ -46,15 +42,22 @@ export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{
 #mkdir creds
 #gsutil cp gs://co-sa-keys/objectio-dns.json creds
 
+#removes current dns records
 gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
+OLD_DNS=$(gcloud --project clearobject-corp dns record-sets list --zone=clearobject-corp | grep build.co.clearobject.com | awk '{print $4}')
+gcloud --project clearobject-corp dns record-sets transaction remove -z=clearobject-corp \
+   --name="build.co.clearobject.com" \
+   --type=A \
+   --ttl=300 $OLD_DNS
+gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
 
+#adds new record
+gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
 gcloud --project clearobject-corp dns record-sets transaction add -z=clearobject-corp \
    --name="build.co.clearobject.com" \
    --type=A \
    --ttl=300 $SERVICE_IP
-
 gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
-
 
 
 echo Your Admin PWD = $ADMIN_PWD
