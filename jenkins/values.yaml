@@ -10,7 +10,16 @@ Master:
   Cpu: "1"
   Memory: "3500Mi"
   JavaOpts: "-Xms3500m -Xmx3500m"
-  ServiceType: LoadBalancer
+  ServiceType: ClusterIP
+  HostName: build.co.clearobject.com
+  Ingress:
+    Annotations:
+      kubernetes.io/ingress.class: "gce"
+      kubernetes.io/ingress.allow-http: "false"
+    TLS:
+      - secretName: jenkins-ingress-ssl
+        hosts:
+          - 'build.co.clearobject.com'
 Agent:
   Enabled: true
 Persistence:
