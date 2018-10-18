@@ -10,17 +10,18 @@ Master:
   Cpu: "1"
   Memory: "3500Mi"
   JavaOpts: "-Xms3500m -Xmx3500m"
-  #ref link: https://github.com/helm/charts/issues/3012
+  #ref link: https://github.com/helm/charts/issues/3012 ; https://www.youtube.com/watch?v=eMOzF_xAm7w ; https://github.com/helm/charts/issues/2635
   ServiceType: ClusterIP
   HostName: "build.co.clearobject.com"
   Ingress:
     Annotations:
       kubernetes.io/ingress.class: "nginx"
-      kubernetes.io/ingress.allow-http: "false"
+      kubernetes.io/tls-acme: "true"
+      
     TLS:
-      - secretName: jenkins-ingress-ssl
+      - secretName: build.co.clearobject.com
         hosts:
-          - "build.co.clearobject.com"
+          - build.co.clearobject.com
 Agent:
   Enabled: true
 Persistence:
