@@ -21,19 +21,23 @@ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-ad
 kubectl create serviceaccount tiller --namespace kube-system
 kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=build.co.clearobject.com"
+kubectl create secret tls jenkins-ingress-ssl --key /tmp/tls.key --cert /tmp/tls.crt
+kubectl describe secret jenkins-ingress-ssl
+
 ./helm init --service-account=tiller --wait
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 #helm chart custom GCP values https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes/blob/master/jenkins/values.yaml
-./helm install stable/nginx-ingress
-./helm install -n cd stable/jenkins --values values.yaml --version 0.19.0 --wait
+./helm install stable/gce-ingress
+./helm install -namespace jenkins -name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 
 #export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
 #build.co.clearobject.com
-#deploy.co.clerobject.com
+#deploy.co.clerobject.comkubectl 
 #manage.co.clerobject.com
 
 #Set DNS
