@@ -62,3 +62,4 @@ gcloud --project clearobject-corp dns record-sets transaction execute -z=clearob
 
 echo Your Admin PWD = $ADMIN_PWD
 echo http://$SERVICE_IP:8080/login
+echo build.co.clearobject.com:8080/login
