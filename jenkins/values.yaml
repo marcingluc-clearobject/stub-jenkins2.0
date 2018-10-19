@@ -15,7 +15,7 @@ Master:
   HostName: "build.co.clearobject.com"
   Ingress:
     Annotations:
-      kubernetes.io/ingress.class: "gce"
+      kubernetes.io/ingress.class: "nginx"
       kubernetes.io/ingress.allow-http: "false"
   #ref link: https://blog.jetstack.io/blog/kube-lego/    
     TLS:
