@@ -21,7 +21,7 @@ Master:
     TLS:
       - secretName: jenkins-ingress-ssl
         hosts:
-          - build.co.clearobject.com
+         - build.co.clearobject.com
 Agent:
   Enabled: true
 Persistence:
