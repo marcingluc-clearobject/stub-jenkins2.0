@@ -6,11 +6,9 @@ gcloud config set compute/zone us-central1-f
 cd jenkins
 
 gcloud --quiet container clusters delete jenkins-cd
-gcloud --quiet compute networks delete jenkins
 
-gcloud --quiet compute networks create jenkins
 gcloud container clusters create jenkins-cd \
-  --network jenkins --machine-type n1-standard-2 --num-nodes 2 \
+  --machine-type n1-standard-2 --num-nodes 2 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw,cloud-platform"
 
 wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
@@ -29,10 +27,10 @@ kubectl describe secret jenkins-ingress-ssl
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 #helm chart custom GCP values https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes/blob/master/jenkins/values.yaml
-./helm install stable/gce-ingress
+./helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 ./helm install --namespace jenkins --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
-ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
+ADMIN_PWD=$(kubectl get secret --namespace jenkins cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 
 #export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
@@ -43,7 +41,7 @@ ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.dat
 #Set DNS
 #Ref link: https://cloud.google.com/dns/records/
 
-#Copy service account
+#Copy service accountkubectl g
 #mkdir creds
 #gsutil cp gs://co-sa-keys/objectio-dns.json creds
 
