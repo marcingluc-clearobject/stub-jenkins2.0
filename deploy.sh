@@ -30,9 +30,9 @@ kubectl describe secret jenkins-ingress-ssl
 ./helm install --name nginx-ingress stable/nginx-ingress 
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
-ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
+ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 
-#export SERVICE_IP=$(kubectl get svc --namespace default cd-jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
 #build.co.clearobject.com
 #deploy.co.clerobject.comkubectl 
@@ -46,23 +46,23 @@ ADMIN_PWD=$(kubectl get secret --namespace default cd-jenkins -o jsonpath="{.dat
 #gsutil cp gs://co-sa-keys/objectio-dns.json creds
 
 #removes current dns records
-#gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
-#OLD_DNS=$(gcloud --project clearobject-corp dns record-sets list --zone=clearobject-corp | grep build.co.clearobject.com | awk '{print $4}')
-#gcloud --project clearobject-corp dns record-sets transaction remove -z=clearobject-corp \
-#   --name="build.co.clearobject.com" \
-#  --type=A \
-#   --ttl=300 $OLD_DNS
-#gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
+gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
+OLD_DNS=$(gcloud --project clearobject-corp dns record-sets list --zone=clearobject-corp | grep build.co.clearobject.com | awk '{print $4}')
+gcloud --project clearobject-corp dns record-sets transaction remove -z=clearobject-corp \
+   --name="build.co.clearobject.com" \
+  --type=A \
+   --ttl=300 $OLD_DNS
+gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
 
 #adds new record
-#gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
-#gcloud --project clearobject-corp dns record-sets transaction add -z=clearobject-corp \
-#   --name="build.co.clearobject.com" \
-#   --type=A \
-#   --ttl=300 $SERVICE_IP
-#gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
+gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
+gcloud --project clearobject-corp dns record-sets transaction add -z=clearobject-corp \
+   --name="build.co.clearobject.com" \
+   --type=A \
+   --ttl=300 $SERVICE_IP
+gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
 
 
-#echo Your Admin PWD = $ADMIN_PWD
-#echo http://$SERVICE_IP:8080/login
-#echo http://build.co.clearobject.com:8080/login
+curl -H 'Host: build.co.clearobject.com' https://$SERVICE_IP/ -k
+echo Your Admin PWD = $ADMIN_PWD
+echo https://build.co.clearobject.com
