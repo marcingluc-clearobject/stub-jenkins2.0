@@ -1,5 +1,4 @@
 #!/bin/bash
-#reference documents:
 #run from cloudshell home directory
 gcloud config set compute/zone us-central1-f
 
@@ -26,25 +25,13 @@ kubectl describe secret jenkins-ingress-ssl
 ./helm init --service-account=tiller --wait
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
-#helm chart custom GCP values https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes/blob/master/jenkins/values.yaml
 ./helm install --name nginx-ingress stable/nginx-ingress 
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
-
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
-#build.co.clearobject.com
-#deploy.co.clerobject.comkubectl 
-#manage.co.clerobject.com
-
 #Set DNS
-#Ref link: https://cloud.google.com/dns/records/
-
-#Copy service accountkubectl g
-#mkdir creds
-#gsutil cp gs://co-sa-keys/objectio-dns.json creds
-
 #removes current dns records
 gcloud --project clearobject-corp dns record-sets transaction start -z=clearobject-corp
 OLD_DNS=$(gcloud --project clearobject-corp dns record-sets list --zone=clearobject-corp | grep build.co.clearobject.com | awk '{print $4}')
