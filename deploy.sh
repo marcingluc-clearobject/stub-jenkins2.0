@@ -27,7 +27,7 @@ kubectl describe secret jenkins-ingress-ssl
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 #helm chart custom GCP values https://github.com/GoogleCloudPlatform/continuous-deployment-on-kubernetes/blob/master/jenkins/values.yaml
-./helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
+./helm install --name nginx-ingress stable/nginx-ingress 
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace jenkins cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
