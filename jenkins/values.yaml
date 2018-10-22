@@ -28,6 +28,6 @@ Persistence:
   Size: 100Gi
 NetworkPolicy:
   ApiVersion: networking.k8s.io/v1
-#rbac:
-#  install: true
-#  serviceAccountName: cd-jenkins
+rbac:
+  install: true
+  serviceAccountName: cd-jenkins
