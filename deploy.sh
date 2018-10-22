@@ -66,3 +66,4 @@ gcloud --project clearobject-corp dns record-sets transaction execute -z=clearob
 curl -H 'Host: build.co.clearobject.com' https://$SERVICE_IP/ -k
 echo Your Admin PWD = $ADMIN_PWD
 echo https://build.co.clearobject.com
+echo $SERVICE_IP
