@@ -4,9 +4,9 @@ gcloud config set compute/zone us-central1-f
 
 cd jenkins
 
-gcloud --quiet container clusters delete jenkins-cd
+gcloud --quiet container clusters delete jenkins
 
-gcloud container clusters create jenkins-cd \
+gcloud container clusters create jenkins \
   --machine-type n1-standard-2 --num-nodes 2 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw,cloud-platform"
 
