@@ -24,7 +24,13 @@ Finally, I would check the logs in the ingress controller:
 $ kubectl logs nginx-ingress-controller
 
 #install cert manager
-./helm install --name cert-manager --namespace kube-system stable/cert-manager
+./helm install --name cert-manager --namespace kube-system stable/cert-manager 
+
+./helm install --name cert-manager \
+--namespace kube-system \
+--set ingressShim.defaultIssuerName=letsencrypt-staging \
+--set ingressShim.defaultIssuerKind=ClusterIssuer \
+stable/cert-manager 
 
 #try to disable rbac to fix validation issues 
 ./helm install --name cert-manager --namespace kube-system stable/cert-manager --set rbac.create=false
@@ -35,14 +41,14 @@ sudo vim lets-encrypt-issuer-staging.yaml
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
-        name: letsencrypt-staging
+  name: letsencrypt-staging
 spec:
-        acme:
-                server: https://acme-staging-v02.api.letsencrypt.org/directory
-                email: marcin.gluc@clearobject.com
-                privateKeySecretRef:
-                        name: letsencrypt-staging
-                http01: {}
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: marcin.gluc@clearobject.com
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    http01: {}
 
 kubectl apply -f lets-encrypt-issuer-staging.yaml
 kubectl get issuer

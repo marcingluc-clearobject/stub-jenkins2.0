@@ -30,6 +30,15 @@ kubectl describe secret jenkins-ingress-ssl
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 ./helm install --name nginx-ingress stable/nginx-ingress 
+
+./helm install --name cert-manager \
+--namespace kube-system \
+--set ingressShim.defaultIssuerName=letsencrypt-staging \
+--set ingressShim.defaultIssuerKind=ClusterIssuer \
+stable/cert-manager 
+
+kubectl apply -f lets-encrypt-issuer-staging.yaml
+
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
