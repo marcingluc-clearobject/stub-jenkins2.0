@@ -151,3 +151,31 @@ kubectl edit ing jenkins
 
 kubectl describe ing jenkins #validate key is updated 
 # validate cert in browser build.co.clearobject.com 
+
+https://www.google.com/search?q=cert+manager+kubernetes.io/tls-acme:+%22true%22&ei=SmTPW9PuLOrCjwSD84PQDw&start=0&sa=N&biw=1147&bih=1359
+
+
+https://medium.com/oracledevs/secure-your-kubernetes-services-using-cert-manager-nginx-ingress-and-lets-encrypt-888c8b996260
+
+./helm install \
+  --name cert-manager \
+  --namespace kube-system \
+  --set ingressShim.defaultIssuerName=letsencrypt-staging \
+  --set ingressShim.defaultIssuerKind=ClusterIssuer \
+  stable/cert-manager 
+
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: marcin.gluc@clearobject.com
+    privateKeySecretRef:
+       name: letsencrypt-sec-staging
+    http01: {}
+kubectl get ClusterIssuer
+kubectl describe ClusterIssuer letsencrypt-staging
+

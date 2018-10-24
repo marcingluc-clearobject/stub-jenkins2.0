@@ -22,18 +22,29 @@ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-ad
 kubectl create serviceaccount tiller --namespace kube-system
 kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=build.co.clearobject.com"
-kubectl create secret tls jenkins-ingress-ssl --key /tmp/tls.key --cert /tmp/tls.crt
-kubectl describe secret jenkins-ingress-ssl
+#openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=build.co.clearobject.com"
+#kubectl create secret tls jenkins-ingress-ssl --key /tmp/tls.key --cert /tmp/tls.crt
+#kubectl describe secret jenkins-ingress-ssl
+
 
 ./helm init --service-account=tiller --wait
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
+
+./helm install \
+  --name cert-manager \
+  --namespace kube-system \
+  --set ingressShim.defaultIssuerName=letsencrypt-staging \
+  --set ingressShim.defaultIssuerKind=ClusterIssuer \
+  stable/cert-manager 
+
 ./helm install --name nginx-ingress stable/nginx-ingress 
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+
+kubectl create -f letsencrypt-issuer-staging.yaml
 
 #Set DNS
 #removes current dns records
