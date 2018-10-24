@@ -44,7 +44,7 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
 
-kubectl create -f letsencrypt-issuer-staging.yaml
+kubectl create -f lets-encrypt-issuer-staging.yaml
 
 #Set DNS
 #removes current dns records
