@@ -17,10 +17,12 @@ Master:
       kubernetes.io/ingress.class: "nginx"
       kubernetes.io/ingress.allow-http: "false"
       kubernetes.io/tls-acme: "true"
-      certmanager.k8s.io/cluster-issuer: letsencrypt-staging
+      certmanager.k8s.io/cluster-issuer: letsencrypt
+      #certmanager.k8s.io/cluster-issuer: letsencrypt-staging
       #kubernetes.io/ingress.global-static-ip-name: static-ip-gcp can be used to assign static ip 
     TLS:
-      - secretName: build-co-clearobject-staging-tls
+      - secretName: build-co-clearobject-tls
+      #- secretName: build-co-clearobject-staging-tls
         hosts:
          - build.co.clearobject.com
 Agent:
