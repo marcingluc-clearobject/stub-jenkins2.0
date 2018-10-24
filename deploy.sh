@@ -31,14 +31,20 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
 
+#./helm install \
+ # --name cert-manager \
+ # --namespace kube-system \
+ # --set ingressShim.defaultIssuerName=letsencrypt-staging \
+ # --set ingressShim.defaultIssuerKind=ClusterIssuer \
+ # stable/cert-manager 
+
 ./helm install \
   --name cert-manager \
   --namespace kube-system \
   --set ingressShim.defaultIssuerName=letsencrypt \
-  #--set ingressShim.defaultIssuerName=letsencrypt-staging \
   --set ingressShim.defaultIssuerKind=ClusterIssuer \
-  stable/cert-manager 
-
+  stable/cert-manager
+  
 ./helm install --name nginx-ingress stable/nginx-ingress 
 ./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 

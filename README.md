@@ -179,3 +179,4 @@ spec:
 kubectl get ClusterIssuer
 kubectl describe ClusterIssuer letsencrypt-staging
 
+Google Apps Login: http://www.tothenew.com/blog/jenkins-google-authentication/
