@@ -7,6 +7,8 @@ Master:
     - git:3.9.1
     - google-oauth-plugin:0.6
     - google-source-plugin:0.3
+    - google-login-plugin:1.4
+    #add google login plugin
   Cpu: "1"
   Memory: "3500Mi"
   JavaOpts: "-Xms3500m -Xmx3500m"
@@ -26,6 +28,7 @@ Master:
         hosts:
          - build.co.clearobject.com
 Agent:
+  #add custom agents 
   Enabled: true
 Persistence:
   Size: 100Gi
