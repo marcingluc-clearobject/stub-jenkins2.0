@@ -183,3 +183,5 @@ kubectl describe ClusterIssuer letsencrypt-staging
 
 Google Apps Login: http://www.tothenew.com/blog/jenkins-google-authentication/
 Look where to generate oauth keys
+Logging out issue: https://issues.jenkins-ci.org/browse/JENKINS-33286
+Use google groups: https://issues.jenkins-ci.org/browse/JENKINS-28010
