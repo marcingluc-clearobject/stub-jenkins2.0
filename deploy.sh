@@ -43,7 +43,6 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
 
 ./helm install \
   --name cert-manager \
-  #current version broken
   --version v0.4.1 \
   --namespace kube-system \
   --set ingressShim.defaultIssuerName=letsencrypt \
