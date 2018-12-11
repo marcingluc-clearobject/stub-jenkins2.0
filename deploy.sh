@@ -46,7 +46,7 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
   stable/cert-manager
   
 ./helm install --name nginx-ingress stable/nginx-ingress 
-./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
+./helm install --name jenkins stable/jenkins --values values.yaml --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
