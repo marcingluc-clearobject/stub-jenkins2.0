@@ -1,6 +1,6 @@
 #!/bin/bash
 #run from cloudshell home directory
-gcloud config set compute/zone us-central1-a
+gcloud config set compute/zone us-central1-f
 
 cd jenkins
 
@@ -46,10 +46,11 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
   --namespace kube-system \
   --set ingressShim.defaultIssuerName=letsencrypt \
   --set ingressShim.defaultIssuerKind=ClusterIssuer \
+  --set createCustomResource=false \
   stable/cert-manager
   
 ./helm install --name nginx-ingress stable/nginx-ingress 
-./helm install --name jenkins stable/jenkins --values values.yaml --wait
+./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
