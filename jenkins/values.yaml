@@ -7,8 +7,8 @@ Master:
     - git:3.9.1
     - google-oauth-plugin:0.6
     - google-source-plugin:0.3
-    - google-login-plugin:1.4
-    - matrix-authorization-strategy-plugin:2.3
+    #- google-login-plugin:1.4
+    #- matrix-authorization-strategy-plugin:2.3
     #add google login plugin
     #add matrix auth plugin
   Cpu: "1"

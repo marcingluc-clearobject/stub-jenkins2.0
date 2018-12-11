@@ -1,6 +1,6 @@
 #!/bin/bash
 #run from cloudshell home directory
-gcloud config set compute/zone us-central1-f
+gcloud config set compute/zone us-central1-a
 
 cd jenkins
 
@@ -10,8 +10,11 @@ gcloud container clusters create jenkins \
   --machine-type n1-standard-2 --num-nodes 2 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw,cloud-platform"
 
-wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
-tar zxfv helm-v2.9.1-linux-amd64.tar.gz
+#wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+#tar zxfv helm-v2.9.1-linux-amd64.tar.gz
+
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz
+tar zxfv helm-v2.12.0-linux-amd64.tar.gz
 cp linux-amd64/helm .
 
 #Since RBAC was removed command below allows permission to default service account. Correct when RBAC is enabled.
