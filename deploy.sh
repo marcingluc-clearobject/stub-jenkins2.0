@@ -1,17 +1,14 @@
 #!/bin/bash
-#run from cloudshell home directory
-gcloud config set compute/zone us-central1-f
+gcloud config set compute/zone us-central1-a
 
 cd jenkins
 
-gcloud --quiet container clusters delete jenkins
+#Do not auto-delete cluster
+#gcloud --quiet container clusters delete jenkins
 
 gcloud container clusters create jenkins \
   --machine-type n1-standard-2 --num-nodes 2 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw,cloud-platform"
-
-#wget https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
-#tar zxfv helm-v2.9.1-linux-amd64.tar.gz
 
 wget https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz
 tar zxfv helm-v2.12.0-linux-amd64.tar.gz
@@ -25,21 +22,14 @@ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-ad
 kubectl create serviceaccount tiller --namespace kube-system
 kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 
+#Used to generate self-signed cert. Now we use cert-manager
 #openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=build.co.clearobject.com"
 #kubectl create secret tls jenkins-ingress-ssl --key /tmp/tls.key --cert /tmp/tls.crt
 #kubectl describe secret jenkins-ingress-ssl
 
-
 ./helm init --service-account=tiller --wait
 ./helm update
 #helm chart source https://github.com/helm/charts/tree/master/stable/jenkins
-
-#./helm install \
- # --name cert-manager \
- # --namespace kube-system \
- # --set ingressShim.defaultIssuerName=letsencrypt-staging \
- # --set ingressShim.defaultIssuerKind=ClusterIssuer \
- # stable/cert-manager 
 
 ./helm install \
   --name cert-manager \
@@ -50,7 +40,7 @@ kubectl create clusterrolebinding tiller-admin-binding --clusterrole=cluster-adm
   stable/cert-manager
   
 ./helm install --name nginx-ingress stable/nginx-ingress 
-./helm install --name jenkins stable/jenkins --values values.yaml --version 0.19.0 --wait
+./helm install --name jenkins stable/jenkins --values values.yaml --version 0.25.0 --wait
 
 ADMIN_PWD=$(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
 export SERVICE_IP=$(kubectl get svc --namespace default nginx-ingress-controller --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
@@ -74,7 +64,6 @@ gcloud --project clearobject-corp dns record-sets transaction add -z=clearobject
    --type=A \
    --ttl=300 $SERVICE_IP
 gcloud --project clearobject-corp dns record-sets transaction execute -z=clearobject-corp
-
 
 curl -H 'Host: build.co.clearobject.com' https://$SERVICE_IP/ -k
 echo Your Admin PWD = $ADMIN_PWD

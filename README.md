@@ -17,10 +17,8 @@ or/and
 
 $ kubectl describe ep
 I would also check the events in the Ingress:
-
 $ kubectl describe ingress jenkins
 Finally, I would check the logs in the ingress controller:
-
 $ kubectl logs nginx-ingress-controller
 
 #install cert manager
@@ -179,9 +177,45 @@ spec:
 kubectl get ClusterIssuer
 kubectl describe ClusterIssuer letsencrypt-staging
 
-
-
 Google Apps Login: http://www.tothenew.com/blog/jenkins-google-authentication/
-Look where to generate oauth keys
+Oauth keys generated in co-automtion-stub project > IAM > credentials 
 Logging out issue: https://issues.jenkins-ci.org/browse/JENKINS-33286
 Use google groups: https://issues.jenkins-ci.org/browse/JENKINS-28010
+
+upgrade to newest helm chart
+https://github.com/helm/helm/blob/master/docs/helm/helm_upgrade.md
+
+./helm list --all
+jenkins         1               Tue Dec 11 16:25:45 2018        DEPLOYED        jenkins-0.19.0          2.121.3         default
+
+#updates to latest version 
+./helm upgrade jenkins stable/jenkins 
+
+#see history
+marcin_gluc@cloudshell:~/stub-jenkins2.0/jenkins (co-automation-stub)$ ./helm history jenkins
+REVISION        UPDATED                         STATUS          CHART           DESCRIPTION
+1               Tue Dec 11 16:25:45 2018        SUPERSEDED      jenkins-0.19.0  Install complete
+2               Tue Dec 11 17:38:10 2018        DEPLOYED        jenkins-0.25.0  Upgrade complete
+
+#roll back to revision #1
+./helm rollback jenkins 1
+
+#confirm roll back
+marcin_gluc@cloudshell:~/stub-jenkins2.0/jenkins (co-automation-stub)$ ./helm list -a
+NAME            REVISION        UPDATED                         STATUS          CHART                   APP VERSION     NAMESPACE
+cert-manager    1               Tue Dec 11 16:25:35 2018        DEPLOYED        cert-manager-v0.4.1     v0.4.1          kube-system
+jenkins         3               Tue Dec 11 17:48:27 2018        DEPLOYED        jenkins-0.19.0          2.121.3         default
+nginx-ingress   1               Tue Dec 11 16:25:41 2018        DEPLOYED        nginx-ingress-1.0.1     0.21.0          default
+
+
+#get all available versions 
+./helm search --versions stable/jenkins
+
+#update to specific version 
+./helm upgrade jenkins stable/jenkins --version 0.24.0 
+
+#update to specific version and update values.yaml 
+./helm upgrade jenkins stable/jenkins --values values.yaml --version 0.25.0 
+
+#manually update plug-ins in gui, restart in gui, then rebuild container to the latest version and reuse old values. Check if plugin updates are overwritten 
+./helm upgrade jenkins stable/jenkins --version 0.25.0 --reuse-values
